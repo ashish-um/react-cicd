@@ -1,39 +1,36 @@
 import * as React from "react";
 import { SignInPage } from "@toolpad/core/SignInPage";
-import { GoogleLogin, useGoogleLogin } from "@react-oauth/google";
+import { GoogleLogin } from "@react-oauth/google";
 
-const providers = [
-  { id: "google", name: "Google" },
-  { id: "credentials", name: "Email and Password" },
-];
+const providers = [{ id: "credentials", name: "Email and Password" }];
 
 export default function ThemeSignInPage() {
-  const login = useGoogleLogin({
-    onSuccess: (tokenResponse) => console.log(tokenResponse),
-    onError: (errorResponse) => console.error(errorResponse),
-  });
-
-  const signIn = async (provider) => {
-    if (provider.id === "google") {
-      login(); // Trigger Google login when Google button is clicked
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          console.log(`Sign in with ${provider.id}`);
-          resolve({ error: "This is a mock error message." });
-        }, 10);
-      });
-    }
-
-    // return new Promise((resolve) => {
-    //   setTimeout(() => {
-    //     console.log(`Sign in with ${provider.id}`);
-    //     resolve({ error: "This is a mock error message." });
-    //   }, 500);
-    // });
+  const signIn = async (_, formData) => {
+    const promise = new Promise((resolve) => {
+      setTimeout(() => {
+        console.log(
+          `Signing in with credentials: ${formData.get("email")}, ${formData.get("password")}`
+        );
+        resolve();
+      }, 300);
+    });
+    return promise;
   };
 
   return (
     <>
+      <div style={{ position: "absolute" }}>
+        <GoogleLogin
+          onSuccess={(credentialResponse) => {
+            console.log(credentialResponse);
+          }}
+          onError={() => {
+            console.log("Login Failed");
+          }}
+          useOneTap
+        />
+      </div>
+
       <SignInPage
         signIn={signIn}
         providers={providers}
